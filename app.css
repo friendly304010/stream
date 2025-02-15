@@ -1,0 +1,93 @@
+.app {
+  font-family: Arial, sans-serif;
+  color: #333;
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.header {
+  padding: 20px;
+  text-align: left;
+}
+
+.main-content {
+  padding: 20px;
+}
+
+.welcome-section {
+  text-align: left;
+}
+
+.start-button {
+  background: linear-gradient(90deg, #a1c4fd, #c2e9fb);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+}
+
+.activity-status {
+  margin-top: 20px;
+}
+
+.status-card {
+  background: #e0f7fa;
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+}
+
+.chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time {
+  background: #ce93d8;
+  border-radius: 10px;
+  padding: 5px 10px;
+  color: white;
+}
+
+.latest-test-results {
+  margin-top: 20px;
+}
+
+.test-result {
+  background: #f3e5f5;
+  border-radius: 20px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.test-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-bar {
+  height: 5px;
+  background: #b39ddb;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  background: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
