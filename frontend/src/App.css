@@ -339,3 +339,65 @@
   height: 18px;
   border-radius: 2px;
 }
+
+.file-drop-area {
+  background-color: #F0F4FF;
+  border: 2px dashed #7C9BFF;
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.file-upload-button {
+  background-color: #7C9BFF;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 24px;
+  display: inline-block;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.analyze-button {
+  background-color: #7C9BFF;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 24px;
+  margin-top: 12px;
+}
+
+.result-card {
+  background-color: #F0F4FF;
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 20px;
+}
+
+.error-message {
+  color: #ff4444;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.transaction-hash {
+  font-family: monospace;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.camera-button {
+  transform: translateY(-15px);
+}
+
+.leaderboard-container {
+  max-width: 500px;
+  width: 100%;
+  height: calc(100vh - 32px);
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #7C6BFF;
+  border-radius: 24px;
+  overflow: hidden;
+}

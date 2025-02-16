@@ -2,6 +2,7 @@ import './App.css';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useState } from 'react';
 import LeaderboardPage from './LeaderboardPage';
+import FileDropPage from './FileDropPage';
 
 const healthData = [
   { time: '1d', value: 65 },
@@ -13,9 +14,14 @@ const healthData = [
 
 function App() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showFileDrop, setShowFileDrop] = useState(false);
 
   if (showLeaderboard) {
     return <LeaderboardPage onBack={() => setShowLeaderboard(false)} />;
+  }
+
+  if (showFileDrop) {
+    return <FileDropPage onBack={() => setShowFileDrop(false)} />;
   }
 
   return (
@@ -32,7 +38,12 @@ function App() {
         
         <div className="test-button">
           <span>Today's Test</span>
-          <button className="start-button">Start</button>
+          <button 
+            className="start-button"
+            onClick={() => setShowFileDrop(true)}
+          >
+            Start
+          </button>
         </div>
         
         <div className="activity-status">
@@ -114,7 +125,10 @@ function App() {
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           </svg>
         </button>
-        <button className="nav-button camera-button">
+        <button 
+          className="nav-button camera-button"
+          onClick={() => setShowFileDrop(true)}
+        >
           <svg viewBox="0 0 24 24" className="nav-icon">
             <circle cx="12" cy="12" r="10"></circle>
           </svg>

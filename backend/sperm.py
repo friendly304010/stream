@@ -10,7 +10,12 @@ import requests
 import json
 from web3 import Web3
 from eth_account import Account
-#test
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import tempfile
+
+app = Flask(__name__)
+CORS(app)
 
 # Load environment variables
 load_dotenv()
@@ -149,35 +154,59 @@ def mint_analysis_nft(avg_count, norm_mot_score, recipient_address):
     return receipt
 
 
-# Run full pipeline
-# Step 1: Analyze sperm motility in a video
-video_path = "dataset/12.mp4"  # Replace with actual file path
-avg_count, motility_score = analyze_sperm_motility(video_path)
-
-
-# Step 2: print out sperm count and motility score
-if avg_count is not None and motility_score is not None:
-    # Calculate normalized motility score
-    norm_mot_score = (motility_score-0.8)/7.07*100
+@app.route('/analyze', methods=['POST'])
+def analyze_video():
+    if 'video' not in request.files:
+        return jsonify({'error': 'No video file provided'}), 400
     
-    print(f"Average sperm count: {avg_count:.2f}")
-    print(f"Normalized Motility score: {norm_mot_score:.2f}%")
+    video_file = request.files['video']
     
+    # Save uploaded file to temporary location
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
+        video_file.save(temp_video.name)
+        video_path = temp_video.name
+
     try:
-        recipient_address = "0x17FBa2Fc71ba51c5a8d6c0191Abc2784f4953067"  # Replace with actual ETH address
-        receipt = mint_analysis_nft(avg_count, norm_mot_score, recipient_address)
-        print(f"NFT minted successfully! Transaction hash: {receipt['transactionHash'].hex()}")
+        # Analyze the video
+        avg_count, motility_score = analyze_sperm_motility(video_path)
         
-        # Determine and print the grade
-        if norm_mot_score >= 70:
-            print("Grade: Gold NFT")
-        elif norm_mot_score >= 40:
-            print("Grade: Silver NFT")
-        else:
-            print("Grade: Bronze NFT")
+        if avg_count is not None and motility_score is not None:
+            # Calculate normalized motility score
+            norm_mot_score = (motility_score-0.8)/7.07*100
             
+            # Mint NFT
+            recipient_address = "0x17FBa2Fc71ba51c5a8d6c0191Abc2784f4953067"  # This should come from frontend
+            receipt = mint_analysis_nft(avg_count, norm_mot_score, recipient_address)
+            
+            # Determine grade
+            grade = "Gold" if norm_mot_score >= 70 else "Silver" if norm_mot_score >= 40 else "Bronze"
+            
+            # Call Eigen agent (mocked for now since it's a hackathon)
+            eigen_response = {
+                "status": "success",
+                "data": {
+                    "verified": True,
+                    "timestamp": "2024-03-19T12:00:00Z"
+                }
+            }
+            
+            return jsonify({
+                'average_count': float(avg_count),
+                'motility_score': float(norm_mot_score),
+                'grade': grade,
+                'transaction_hash': receipt['transactionHash'].hex(),
+                'eigen_verification': eigen_response
+            })
+        
+        return jsonify({'error': 'Analysis failed'}), 500
+        
     except Exception as e:
-        print(f"Error minting NFT: {str(e)}")
-else:
-    print("Error in analyzing sperm motility.")
+        return jsonify({'error': str(e)}), 500
+    
+    finally:
+        # Clean up temporary file
+        os.unlink(video_path)
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
 
