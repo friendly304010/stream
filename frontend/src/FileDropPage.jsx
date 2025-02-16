@@ -10,21 +10,23 @@ function FileDropPage({ onBack }) {
   const [thumbnail, setThumbnail] = useState(null);
 
   const stages = [
-    { name: 'Uploading video...', duration: 1500 },
-    { name: 'Sending to Eigen Agent...', duration: 2000 },
-    { name: 'Calling YOLO-Sperm for detection...', duration: 2500 },
-    { name: 'Analyzing positions...', duration: 2000 },
-    { name: 'Calculating health metrics...', duration: 1500 },
-    { name: 'Drawing conclusions...', duration: 1500 },
-    { name: 'Finalizing results...', duration: 1000 }
+    { name: 'Uploading video...' },
+    { name: 'Sending to Eigen Agent...' },
+    { name: 'Calling YOLO-Sperm for detection...' },
+    { name: 'Analyzing positions...' },
+    { name: 'Calculating health metrics...' },
+    { name: 'Drawing conclusions...' },
+    { name: 'Finalizing results...' }
   ];
 
   const simulateProgress = async () => {
     let totalTime = 0;
     for (const stage of stages) {
-      setProgress({ stage: stage.name, percent: Math.min(95, (totalTime / 12000) * 100) });
-      await new Promise(resolve => setTimeout(resolve, stage.duration));
-      totalTime += stage.duration;
+      setProgress({ stage: stage.name, percent: Math.min(95, (totalTime / (stages.length * 7500)) * 100) });
+      // Random wait between 5000ms (5s) and 10000ms (10s)
+      const waitTime = Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+      totalTime += waitTime;
     }
   };
 
@@ -159,24 +161,50 @@ function FileDropPage({ onBack }) {
       {result && (
         <div className="result-card">
           <h3>Analysis Results</h3>
-          <p>Average Count: {result.average_count.toFixed(2)}</p>
-          <p>Motility Score: {result.motility_score.toFixed(2)}%</p>
-          <p>Grade: {result.grade} NFT</p>
+          <div className="metrics">
+            <div className="metric">
+              <label>Average Count:</label>
+              <span>{result.average_count.toFixed(2)} sperm cells</span>
+            </div>
+            <div className="metric">
+              <label>Motility Score:</label>
+              <span>{result.motility_score.toFixed(2)}%</span>
+            </div>
+            <div className="metric">
+              <label>Grade:</label>
+              <span className={`grade ${result.grade.toLowerCase()}`}>
+                {result.grade} NFT
+              </span>
+            </div>
+          </div>
+
           <div className="eigen-verification">
-            <h4>Eigen Verification</h4>
-            <p>{result.eigen_verification.content}</p>
+            <h4>AI Analysis & Recommendations</h4>
+            <div className="verification-content">
+              {result.eigen_verification.content.split('\n').map((line, i) => (
+                <p key={i}>{line.trim()}</p>
+              ))}
+            </div>
             <div className="verification-status">
               <span className={`status ${result.eigen_verification.status}`}>
-                {result.eigen_verification.status}
+                Verified by EigenDA
               </span>
               <span className="timestamp">
                 {new Date(result.eigen_verification.data.timestamp).toLocaleString()}
               </span>
             </div>
           </div>
-          <p className="transaction-hash">
-            TX: {result.transaction_hash.slice(0, 10)}...
-          </p>
+
+          <div className="transaction-info">
+            <span className="label">Transaction Hash:</span>
+            <a 
+              href={`https://sepolia.etherscan.io/tx/${result.transaction_hash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {result.transaction_hash.slice(0, 10)}...
+            </a>
+          </div>
         </div>
       )}
     </div>

@@ -485,3 +485,97 @@
   color: #666;
   font-size: 0.8rem;
 }
+
+.result-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metric label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.metric span {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.grade {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.grade.gold { background: #FFD700; color: #000; }
+.grade.silver { background: #C0C0C0; color: #000; }
+.grade.bronze { background: #CD7F32; color: #fff; }
+
+.eigen-verification {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.eigen-verification h4 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.verification-content {
+  color: #2c3e50;
+  line-height: 1.6;
+}
+
+.verification-content p {
+  margin-bottom: 0.75rem;
+}
+
+.verification-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.status {
+  background: #e6f4ea;
+  color: #137333;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.transaction-info {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.transaction-info a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.transaction-info a:hover {
+  text-decoration: underline;
+}

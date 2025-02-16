@@ -206,7 +206,16 @@ def mint_analysis_nft(avg_count, norm_mot_score, recipient_address):
 
 def get_eigen_verification(avg_count, motility_score):
     try:
-        prompt = f"Analyze sperm sample results: Average count {avg_count}, Motility score {motility_score}. Provide clinical interpretation and verification."
+        prompt = f"""Analyze sperm sample results:
+        - Average count: {avg_count} sperm cells
+        - Motility score: {motility_score}%
+        
+        Please provide:
+        1. Clinical interpretation of these values
+        2. Comparison to WHO standards
+        3. Specific recommendations for improvement if needed
+        4. Overall fertility assessment
+        """
         
         response = requests.post(
             f"{EIGEN_AGENT_URL}/api/generate",
