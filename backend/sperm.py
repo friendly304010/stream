@@ -15,6 +15,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import tempfile
 
+# Load environment variables at the start
+load_dotenv()
+
+# Analysis mode flag - set to "dummy" for testing, "real" for actual analysis
+ANALYSIS_MODE = "dummy"
+
+# Verify environment variables are loaded
+private_key = os.getenv('PRIVATE_KEY')
+if not private_key:
+    print("Warning: PRIVATE_KEY not found in environment variables")
+
 app = FastAPI()
 
 # Configure CORS
@@ -25,9 +36,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Load environment variables
-load_dotenv()
 
 def install_dependencies():
    """Install required packages using pip3"""
@@ -112,101 +120,155 @@ def analyze_sperm_motility(video_path):
 
 
 def mint_analysis_nft(avg_count, norm_mot_score, recipient_address):
-    # Connect to Sepolia testnet (or your chosen network)
-    w3 = Web3(Web3.HTTPProvider('https://ethereum-sepolia-rpc.publicnode.com'))
-    
-    # Update with your deployed contract address
-    contract_address = "0x125B503d97949BEA16EB829306d72d473AFC7fEE"
-    
-    # Load contract ABI from the JSON artifact
-    with open('artifacts/contracts/SpermAnalysisNFT.sol/SpermAnalysisNFT.json', 'r') as f:
-        contract_abi = json.load(f)['abi']
-    
-    # Create contract instance
-    contract = w3.eth.contract(address=contract_address, abi=contract_abi)
-    
-    # Your private key from environment variable
-    private_key = os.getenv('PRIVATE_KEY')
-    account = Account.from_key(private_key)
-    
-    # Build transaction
-    nonce = w3.eth.get_transaction_count(account.address)
-    
-    # Convert scores to integers for blockchain
-    avg_count_wei = w3.to_wei(avg_count, 'ether')
-    # Convert normalized score to integer (multiply by 100 to preserve decimals)
-    norm_mot_score_int = int(norm_mot_score * 100)
-    
-    # Get current gas price and increase it by 20%
-    gas_price = int(w3.eth.gas_price * 1.2)
-    
-    transaction = contract.functions.mintNFT(
-        recipient_address,
-        avg_count_wei,
-        norm_mot_score_int
-    ).build_transaction({
-        'chainId': 11155111,  # Sepolia chain ID
-        'gas': 2000000,
-        'maxFeePerGas': gas_price,  # Use increased gas price
-        'maxPriorityFeePerGas': int(gas_price * 0.1),  # Set priority fee
-        'nonce': nonce,
-        'from': account.address,
-        'type': 2  # EIP-1559 transaction type
-    })
-    
-    # Sign and send transaction
-    signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
-    tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)  # Changed from rawTransaction to raw_transaction
-    
-    # Wait for transaction receipt
-    receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=180)  # Increased timeout to 180 seconds
-    return receipt
+    try:
+        # Connect to Sepolia testnet
+        w3 = Web3(Web3.HTTPProvider('https://ethereum-sepolia-rpc.publicnode.com'))
+        
+        if not w3.is_connected():
+            raise Exception("Failed to connect to Ethereum network")
+        
+        # Contract address on Sepolia
+        contract_address = "0x125B503d97949BEA16EB829306d72d473AFC7fEE"
+        
+        # Simplified ABI with just the mintNFT function we need
+        abi = [
+            {
+                "inputs": [
+                    {"internalType": "address", "name": "recipient", "type": "address"},
+                    {"internalType": "uint256", "name": "averageCount", "type": "uint256"},
+                    {"internalType": "uint256", "name": "normalizedMotilityScore", "type": "uint256"}
+                ],
+                "name": "mintNFT",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]
+        
+        # Create contract instance
+        contract = w3.eth.contract(address=contract_address, abi=abi)
+        
+        # Get private key from environment variable
+        private_key = os.getenv('PRIVATE_KEY')
+        if not private_key:
+            raise Exception("Private key not found in environment variables")
+            
+        account = Account.from_key(private_key)
+        
+        # Get current nonce
+        nonce = w3.eth.get_transaction_count(account.address)
+        
+        # Convert scores to integers for blockchain
+        # Ensure values are valid numbers before conversion
+        if not isinstance(avg_count, (int, float)) or not isinstance(norm_mot_score, (int, float)):
+            raise ValueError("Invalid input values for average count or motility score")
+            
+        avg_count_wei = int(avg_count * (10 ** 18))  # Convert to wei equivalent
+        norm_mot_score_int = int(norm_mot_score)
+        
+        # Get current gas price and increase it by 20%
+        gas_price = int(w3.eth.gas_price * 1.2)
+        
+        # Build transaction
+        transaction = contract.functions.mintNFT(
+            recipient_address,
+            avg_count_wei,
+            norm_mot_score_int
+        ).build_transaction({
+            'chainId': 11155111,  # Sepolia chain ID
+            'gas': 2000000,
+            'maxFeePerGas': gas_price,
+            'maxPriorityFeePerGas': int(gas_price * 0.1),
+            'nonce': nonce,
+            'from': account.address,
+            'type': 2  # EIP-1559 transaction type
+        })
+        
+        # Sign and send transaction
+        signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
+        tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
+        
+        # Wait for transaction receipt
+        receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=180)
+        
+        if receipt is None:
+            raise Exception("Transaction failed - no receipt received")
+            
+        return receipt
+        
+    except Exception as e:
+        print(f"Error in mint_analysis_nft: {str(e)}")
+        raise Exception(f"Failed to mint NFT: {str(e)}")
 
 
 @app.post("/analyze")
 async def analyze_video(video: UploadFile = File(...)):
-    # Save uploaded file to temporary location
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
-        content = await video.read()
-        temp_video.write(content)
-        video_path = temp_video.name
-
     try:
-        # Analyze the video
-        avg_count, motility_score = analyze_sperm_motility(video_path)
-        
-        if avg_count is not None and motility_score is not None:
-            # Calculate normalized motility score
-            norm_mot_score = (motility_score-0.8)/7.07*100
+        if ANALYSIS_MODE == "dummy":
+            # Dummy values for testing
+            avg_count = 45.67
+            motility_score = 5.89
+            norm_mot_score = 75.0  # High score for testing (Gold NFT)
             
-            # Mint NFT
+            # Mint NFT with dummy values
             recipient_address = "0x17FBa2Fc71ba51c5a8d6c0191Abc2784f4953067"
             receipt = mint_analysis_nft(avg_count, norm_mot_score, recipient_address)
             
-            # Determine grade
+            # Determine grade based on normalized score
             grade = "Gold" if norm_mot_score >= 70 else "Silver" if norm_mot_score >= 40 else "Bronze"
-            
-            # Mock Eigen agent response
-            eigen_response = {
-                "status": "success",
-                "data": {
-                    "verified": True,
-                    "timestamp": "2024-03-19T12:00:00Z"
-                }
-            }
             
             return {
                 'average_count': float(avg_count),
                 'motility_score': float(norm_mot_score),
                 'grade': grade,
                 'transaction_hash': receipt['transactionHash'].hex(),
-                'eigen_verification': eigen_response
+                'eigen_verification': {
+                    "status": "success",
+                    "data": {
+                        "verified": True,
+                        "timestamp": "2024-03-19T12:00:00Z"
+                    }
+                }
             }
         
-        return JSONResponse(
-            status_code=500,
-            content={'error': 'Analysis failed'}
-        )
+        # If not in dummy mode, proceed with real analysis
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
+            content = await video.read()
+            temp_video.write(content)
+            video_path = temp_video.name
+
+        # Real analysis code
+        avg_count, motility_score = analyze_sperm_motility(video_path)
+        
+        if avg_count is None or motility_score is None:
+            return JSONResponse(
+                status_code=400,
+                content={'error': 'No sperm detected in video'}
+            )
+        
+        # Calculate normalized motility score
+        norm_mot_score = (motility_score-0.8)/7.07*100
+        
+        # Mint NFT
+        recipient_address = "0x17FBa2Fc71ba51c5a8d6c0191Abc2784f4953067"
+        receipt = mint_analysis_nft(avg_count, norm_mot_score, recipient_address)
+        
+        # Determine grade
+        grade = "Gold" if norm_mot_score >= 70 else "Silver" if norm_mot_score >= 40 else "Bronze"
+        
+        return {
+            'average_count': float(avg_count),
+            'motility_score': float(norm_mot_score),
+            'grade': grade,
+            'transaction_hash': receipt['transactionHash'].hex(),
+            'eigen_verification': {
+                "status": "success",
+                "data": {
+                    "verified": True,
+                    "timestamp": "2024-03-19T12:00:00Z"
+                }
+            }
+        }
         
     except Exception as e:
         return JSONResponse(
@@ -215,8 +277,9 @@ async def analyze_video(video: UploadFile = File(...)):
         )
     
     finally:
-        # Clean up temporary file
-        os.unlink(video_path)
+        # Clean up temporary file only if it was created
+        if 'video_path' in locals():
+            os.unlink(video_path)
 
 if __name__ == "__main__":
     import uvicorn
