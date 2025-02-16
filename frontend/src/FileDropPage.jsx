@@ -182,7 +182,7 @@ function FileDropPage({ onBack }) {
             <div className="transaction-info">
               <span className="label">View NFT:</span>
               <a 
-                href={`https://sepolia.etherscan.io/tx/${result.transaction_hash}`}
+                href={`https://sepolia.etherscan.io/tx/${result.transaction_hash.startsWith('0x') ? result.transaction_hash : `0x${result.transaction_hash}`}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

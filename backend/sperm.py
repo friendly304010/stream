@@ -254,7 +254,7 @@ async def analyze_video(video: UploadFile = File(...)):
                 'average_count': float(avg_count),
                 'motility_score': float(norm_mot_score),
                 'grade': grade,
-                'transaction_hash': receipt['transactionHash'].hex(),
+                'transaction_hash': receipt['transactionHash'].hex().strip(),
                 'analysis_text': "Sample analysis text about the sperm quality and recommendations."  # Add your actual analysis text here
             }
         
@@ -295,8 +295,8 @@ async def analyze_video(video: UploadFile = File(...)):
             'average_count': float(avg_count),
             'motility_score': float(norm_mot_score),
             'grade': grade,
-            'transaction_hash': receipt['transactionHash'].hex(),
-            'analysis_text': "Sample analysis text about the sperm quality and recommendations."  # Add your actual analysis text here
+            'transaction_hash': receipt['transactionHash'].hex().strip(),
+            'analysis_text': eigen_result['response'] if eigen_result else "No analysis available."
         }
         
     except Exception as e:
