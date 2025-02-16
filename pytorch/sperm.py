@@ -5,6 +5,8 @@ import numpy as np
 import os
 import subprocess
 import sys
+import requests
+import json
 #test
 
 def install_dependencies():
@@ -99,7 +101,31 @@ avg_count, motility_score = analyze_sperm_motility(video_path)
 
 # Step 2: print out sperm count and motility score
 if avg_count is not None and motility_score is not None:
-   print(f"Average sperm count: {avg_count}, Motility score: {motility_score}")
+    print(f"Average sperm count: {avg_count}, Motility score: {motility_score}")
+    
+    # Send results to API
+    api_url = "http://localhost:3000/api/generate"
+    
+    # Prepare analysis data
+    analysis_data = {
+        "prompt": f"Sperm Analysis Results:\nAverage Count: {avg_count:.2f}\nMotility Score: {motility_score:.2f}",
+        "metrics": {
+            "average_count": float(avg_count),
+            "motility_score": float(motility_score)
+        }
+    }
+    
+    try:
+        response = requests.post(
+            api_url,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(analysis_data)
+        )
+        response.raise_for_status()  # Raise an exception for bad status codes
+        print("Analysis results sent successfully to API")
+        print("API Response:", response.json())
+    except Exception as e:
+        print(f"Error sending results to API: {str(e)}")
 else:
-   print("Error in analyzing sperm motility.")
+    print("Error in analyzing sperm motility.")
 
