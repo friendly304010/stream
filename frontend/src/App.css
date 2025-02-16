@@ -579,3 +579,50 @@
 .transaction-info a:hover {
   text-decoration: underline;
 }
+
+.user-stats {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 2px;
+}
+
+.stat-divider {
+  margin: 0 4px;
+  color: #999;
+}
+
+.grade {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  margin-right: 4px;
+}
+
+.grade.gold {
+  background: #FFD700;
+  color: #000;
+}
+
+.grade.silver {
+  background: #C0C0C0;
+  color: #000;
+}
+
+.grade.bronze {
+  background: #CD7F32;
+  color: #fff;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.leaderboard-item {
+  padding: 16px;
+  margin-bottom: 12px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
