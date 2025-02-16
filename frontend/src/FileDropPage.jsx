@@ -193,7 +193,7 @@ function FileDropPage({ onBack }) {
 
           {result.analysis_text && (
             <div className="analysis-text">
-              <h4>AI Analysis</h4>
+              <h4>Eigen Agent Analysis</h4>
               <p>{result.analysis_text}</p>
             </div>
           )}
