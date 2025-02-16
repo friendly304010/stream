@@ -1,5 +1,7 @@
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { useState } from 'react';
+import LeaderboardPage from './LeaderboardPage';
 
 const healthData = [
   { time: '1d', value: 65 },
@@ -10,6 +12,12 @@ const healthData = [
 ];
 
 function App() {
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+  if (showLeaderboard) {
+    return <LeaderboardPage onBack={() => setShowLeaderboard(false)} />;
+  }
+
   return (
     <div className="app-container">
       <div className="app-content">
@@ -111,7 +119,10 @@ function App() {
             <circle cx="12" cy="12" r="10"></circle>
           </svg>
         </button>
-        <button className="nav-button stats-button">
+        <button 
+          className="nav-button stats-button"
+          onClick={() => setShowLeaderboard(true)}
+        >
           <svg viewBox="0 0 24 24" className="nav-icon">
             <path d="M2 2v20h20"></path>
             <path d="M6 16l6-8 6 8"></path>

@@ -216,3 +216,126 @@
   height: 120px;
   margin-top: 16px;
 }
+
+.leaderboard-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #7C6BFF;
+  z-index: 1000;
+  padding: 24px;
+  color: white;
+}
+
+.leaderboard-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  margin-right: 16px;
+}
+
+.back-icon {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+  stroke-width: 2;
+  fill: none;
+}
+
+.leaderboard-header h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.time-filter {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.filter-button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: none;
+  color: white;
+  border-radius: 20px;
+  font-size: 16px;
+}
+
+.filter-button.active {
+  background-color: white;
+  color: #7C6BFF;
+}
+
+.leaderboard-list {
+  background-color: white;
+  border-radius: 24px;
+  padding: 16px;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: 16px;
+  background-color: white;
+  margin-bottom: 8px;
+}
+
+.rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #F5F5F5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  margin-right: 16px;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.user-name {
+  color: #333;
+  font-weight: 500;
+}
+
+.user-points {
+  color: #666;
+  font-size: 14px;
+}
+
+.badge {
+  background-color: #F5F5F5;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.country-flag {
+  width: 24px;
+  height: 18px;
+  border-radius: 2px;
+}
