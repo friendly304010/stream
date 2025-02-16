@@ -7,6 +7,7 @@ function FileDropPage({ onBack }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState({ stage: '', percent: 0 });
+  const [thumbnail, setThumbnail] = useState(null);
 
   const stages = [
     { name: 'Uploading video...', duration: 1500 },
@@ -27,12 +28,35 @@ function FileDropPage({ onBack }) {
     }
   };
 
-  const handleFileDrop = (e) => {
+  const createVideoThumbnail = (file) => {
+    const video = document.createElement('video');
+    video.src = URL.createObjectURL(file);
+    
+    return new Promise((resolve) => {
+      video.onloadeddata = () => {
+        video.currentTime = 0;
+        video.onseeked = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const thumbnailUrl = canvas.toDataURL();
+          URL.revokeObjectURL(video.src);
+          resolve(thumbnailUrl);
+        };
+      };
+    });
+  };
+
+  const handleFileDrop = async (e) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer?.files[0] || e.target.files[0];
     if (droppedFile && droppedFile.type.startsWith('video/')) {
       setFile(droppedFile);
       setError(null);
+      const thumbnailUrl = await createVideoThumbnail(droppedFile);
+      setThumbnail(thumbnailUrl);
     } else {
       setError('Please upload a video file');
     }
@@ -100,6 +124,13 @@ function FileDropPage({ onBack }) {
         ) : (
           <div className="file-info">
             <p>{file.name}</p>
+            {thumbnail && (
+              <img 
+                src={thumbnail} 
+                alt="Video thumbnail" 
+                className="video-thumbnail"
+              />
+            )}
             <button 
               className="analyze-button"
               onClick={handleSubmit}
