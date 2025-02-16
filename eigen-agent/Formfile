@@ -1,0 +1,9 @@
+NAME agent-kit-server
+
+USER username:bigdog passwd:bigdog123 sudo:true disable_root:false ssh_authorized_keys:"<ssh-key>"
+
+VCPU 2
+
+MEM 2048 
+
+DISK 5
