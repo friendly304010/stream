@@ -16,16 +16,16 @@ function App() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showFileDrop, setShowFileDrop] = useState(false);
 
-  if (showLeaderboard) {
-    return <LeaderboardPage onBack={() => setShowLeaderboard(false)} />;
-  }
+  const renderContent = () => {
+    if (showLeaderboard) {
+      return <LeaderboardPage onBack={() => setShowLeaderboard(false)} />;
+    }
 
-  if (showFileDrop) {
-    return <FileDropPage onBack={() => setShowFileDrop(false)} />;
-  }
+    if (showFileDrop) {
+      return <FileDropPage onBack={() => setShowFileDrop(false)} />;
+    }
 
-  return (
-    <div className="app-container">
+    return (
       <div className="app-content">
         <div className="home-header">
           <span>Home</span>
@@ -118,16 +118,27 @@ function App() {
           ))}
         </div>
       </div>
-      
+    );
+  };
+
+  return (
+    <div className="app-container">
+      {renderContent()}
       <nav className="bottom-nav">
-        <button className="nav-button home-button">
+        <button 
+          className="nav-button home-button"
+          onClick={() => setShowFileDrop(true)}
+        >
           <svg viewBox="0 0 24 24" className="nav-icon">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           </svg>
         </button>
         <button 
           className="nav-button camera-button"
-          onClick={() => setShowFileDrop(true)}
+          onClick={() => {
+            setShowFileDrop(false);
+            setShowLeaderboard(false);
+          }}
         >
           <svg viewBox="0 0 24 24" className="nav-icon">
             <circle cx="12" cy="12" r="10"></circle>

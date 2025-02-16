@@ -4,7 +4,7 @@
   width: 100%;
   height: calc(100vh - 32px);
   margin: 0 auto;
-  padding: 24px 24px 100px 24px;
+  padding: 24px;
   background-color: #FFFFFF;
   position: relative;
   border-radius: 24px;
@@ -17,7 +17,7 @@
 .app-content {
   flex: 1;
   overflow-y: auto;
-  padding-right: 8px;
+  padding-bottom: 80px;
 }
 
 .app-content::-webkit-scrollbar {
@@ -189,14 +189,12 @@
 }
 
 .camera-button {
-  background-color: #7C9BFF;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -30px;
+  position: relative;
+  top: -15px;
+  margin-bottom: -30px;
+  background-color: #7C9BFF !important;
+  border-radius: 50% !important;
+  padding: 16px !important;
 }
 
 .nav-icon {
@@ -245,7 +243,7 @@
 .back-icon {
   width: 24px;
   height: 24px;
-  stroke: white;
+  stroke: #666;
   stroke-width: 2;
   fill: none;
 }
@@ -387,10 +385,6 @@
   font-size: 0.9em;
 }
 
-.camera-button {
-  transform: translateY(-15px);
-}
-
 .leaderboard-container {
   max-width: 500px;
   width: 100%;
@@ -400,4 +394,14 @@
   background-color: #7C6BFF;
   border-radius: 24px;
   overflow: hidden;
+}
+
+.leaderboard-content {
+  background-color: #7C6BFF;
+  color: white;
+  margin: -24px -24px 0;
+  padding: 24px;
+  border-radius: 24px 24px 0 0;
+  height: 100%;
+  overflow-y: auto;
 }
