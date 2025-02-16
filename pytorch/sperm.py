@@ -95,23 +95,27 @@ def analyze_sperm_motility(video_path):
 
 # Run full pipeline
 # Step 1: Analyze sperm motility in a video
-video_path = "../dataset/11.mp4"  # Replace with actual file path
+video_path = "../dataset/12.mp4"  # Replace with actual file path
 avg_count, motility_score = analyze_sperm_motility(video_path)
 
 
 # Step 2: print out sperm count and motility score
 if avg_count is not None and motility_score is not None:
-    print(f"Average sperm count: {avg_count}, Motility score: {motility_score}")
+
+    norm_mot_score = (motility_score-0.8)/7.07*100
+
+    print(f"Average sperm count: {avg_count}, Motility score: {motility_score}, Normalized Motility score: {norm_mot_score}%")
     
     # Send results to API
     api_url = "http://localhost:3000/api/generate"
     
     # Prepare analysis data
     analysis_data = {
-        "prompt": f"Sperm Analysis Results:\nAverage Count: {avg_count:.2f}\nMotility Score: {motility_score:.2f}",
+        "prompt": f"My sperm analysis results were the following:\nAverage Count: {avg_count:.2f}\nNormalized Motility score: {norm_mot_score:.2f}",
         "metrics": {
             "average_count": float(avg_count),
-            "motility_score": float(motility_score)
+            "motility_score": float(motility_score),
+            "norm_mot_score": float(norm_mot_score)
         }
     }
     
@@ -121,9 +125,20 @@ if avg_count is not None and motility_score is not None:
             headers={"Content-Type": "application/json"},
             data=json.dumps(analysis_data)
         )
-        response.raise_for_status()  # Raise an exception for bad status codes
-        print("Analysis results sent successfully to API")
-        print("API Response:", response.json())
+        
+        # Print status code for debugging
+        print(f"API Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            print("Analysis results sent successfully to API")
+            try:
+                print("API Response:", response.json())
+            except json.JSONDecodeError:
+                print("Received non-JSON response:", response.text)
+        else:
+            print(f"API request failed with status code: {response.status_code}")
+            print("Response content:", response.text)
+            
     except Exception as e:
         print(f"Error sending results to API: {str(e)}")
 else:
