@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function FileDropPage({ onBack }) {
@@ -6,6 +6,26 @@ function FileDropPage({ onBack }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [progress, setProgress] = useState({ stage: '', percent: 0 });
+
+  const stages = [
+    { name: 'Uploading video...', duration: 1500 },
+    { name: 'Sending to Eigen Agent...', duration: 2000 },
+    { name: 'Calling YOLO-Sperm for detection...', duration: 2500 },
+    { name: 'Analyzing positions...', duration: 2000 },
+    { name: 'Calculating health metrics...', duration: 1500 },
+    { name: 'Drawing conclusions...', duration: 1500 },
+    { name: 'Finalizing results...', duration: 1000 }
+  ];
+
+  const simulateProgress = async () => {
+    let totalTime = 0;
+    for (const stage of stages) {
+      setProgress({ stage: stage.name, percent: Math.min(95, (totalTime / 12000) * 100) });
+      await new Promise(resolve => setTimeout(resolve, stage.duration));
+      totalTime += stage.duration;
+    }
+  };
 
   const handleFileDrop = (e) => {
     e.preventDefault();
@@ -22,6 +42,11 @@ function FileDropPage({ onBack }) {
     if (!file) return;
 
     setLoading(true);
+    setProgress({ stage: '', percent: 0 });
+    
+    // Start progress simulation
+    simulateProgress();
+
     const formData = new FormData();
     formData.append('video', file);
 
@@ -33,6 +58,8 @@ function FileDropPage({ onBack }) {
         withCredentials: true
       });
       
+      // Set progress to 100% when done
+      setProgress({ stage: 'Complete!', percent: 100 });
       setResult(response.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to connect to server');
@@ -80,6 +107,18 @@ function FileDropPage({ onBack }) {
             >
               {loading ? 'Analyzing...' : 'Start Analysis'}
             </button>
+            
+            {loading && (
+              <div className="progress-container">
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill"
+                    style={{ width: `${progress.percent}%` }}
+                  ></div>
+                </div>
+                <p className="progress-stage">{progress.stage}</p>
+              </div>
+            )}
           </div>
         )}
       </div>

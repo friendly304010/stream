@@ -19,7 +19,7 @@ import tempfile
 load_dotenv()
 
 # Analysis mode flag - set to "dummy" for testing, "real" for actual analysis
-ANALYSIS_MODE = "dummy"
+ANALYSIS_MODE = "real"
 
 # Verify environment variables are loaded
 private_key = os.getenv('PRIVATE_KEY')
