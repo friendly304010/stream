@@ -26,6 +26,9 @@ private_key = os.getenv('PRIVATE_KEY')
 if not private_key:
     print("Warning: PRIVATE_KEY not found in environment variables")
 
+# Add after line 19
+EIGEN_AGENT_URL = os.getenv('EIGEN_AGENT_URL', 'http://localhost:3000')
+
 app = FastAPI()
 
 # Configure CORS
@@ -201,6 +204,27 @@ def mint_analysis_nft(avg_count, norm_mot_score, recipient_address):
         raise Exception(f"Failed to mint NFT: {str(e)}")
 
 
+def get_eigen_verification(avg_count, motility_score):
+    try:
+        prompt = f"Analyze sperm sample results: Average count {avg_count}, Motility score {motility_score}. Provide clinical interpretation and verification."
+        
+        response = requests.post(
+            f"{EIGEN_AGENT_URL}/api/generate",
+            json={"prompt": prompt},
+            headers={"Content-Type": "application/json"}
+        )
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Error from Eigen Agent: {response.text}")
+            return None
+            
+    except Exception as e:
+        print(f"Failed to get Eigen verification: {e}")
+        return None
+
+
 @app.post("/analyze")
 async def analyze_video(video: UploadFile = File(...)):
     try:
@@ -256,18 +280,20 @@ async def analyze_video(video: UploadFile = File(...)):
         # Determine grade
         grade = "Gold" if norm_mot_score >= 70 else "Silver" if norm_mot_score >= 40 else "Bronze"
         
+        # Get Eigen verification
+        eigen_result = get_eigen_verification(avg_count, norm_mot_score)
+        if not eigen_result:
+            return JSONResponse(
+                status_code=500,
+                content={'error': 'Failed to get Eigen verification'}
+            )
+
         return {
             'average_count': float(avg_count),
             'motility_score': float(norm_mot_score),
             'grade': grade,
             'transaction_hash': receipt['transactionHash'].hex(),
-            'eigen_verification': {
-                "status": "success",
-                "data": {
-                    "verified": True,
-                    "timestamp": "2024-03-19T12:00:00Z"
-                }
-            }
+            'eigen_verification': eigen_result
         }
         
     except Exception as e:

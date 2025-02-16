@@ -162,6 +162,18 @@ function FileDropPage({ onBack }) {
           <p>Average Count: {result.average_count.toFixed(2)}</p>
           <p>Motility Score: {result.motility_score.toFixed(2)}%</p>
           <p>Grade: {result.grade} NFT</p>
+          <div className="eigen-verification">
+            <h4>Eigen Verification</h4>
+            <p>{result.eigen_verification.content}</p>
+            <div className="verification-status">
+              <span className={`status ${result.eigen_verification.status}`}>
+                {result.eigen_verification.status}
+              </span>
+              <span className="timestamp">
+                {new Date(result.eigen_verification.data.timestamp).toLocaleString()}
+              </span>
+            </div>
+          </div>
           <p className="transaction-hash">
             TX: {result.transaction_hash.slice(0, 10)}...
           </p>
