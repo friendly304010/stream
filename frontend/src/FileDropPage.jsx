@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 
 function FileDropPage({ onBack }) {
   const [file, setFile] = useState(null);
@@ -25,19 +26,16 @@ function FileDropPage({ onBack }) {
     formData.append('video', file);
 
     try {
-      const response = await fetch('http://localhost:5000/analyze', {
-        method: 'POST',
-        body: formData,
+      const response = await axios.post('http://localhost:5001/analyze', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true
       });
-
-      const data = await response.json();
-      if (response.ok) {
-        setResult(data);
-      } else {
-        setError(data.error || 'Analysis failed');
-      }
+      
+      setResult(response.data);
     } catch (err) {
-      setError('Failed to connect to server');
+      setError(err.response?.data?.error || 'Failed to connect to server');
     } finally {
       setLoading(false);
     }
@@ -45,14 +43,14 @@ function FileDropPage({ onBack }) {
 
   return (
     <div className="app-content">
-    <div className="home-header">
-      <button className="back-button" onClick={onBack}>
-        <svg viewBox="0 0 24 24" className="back-icon">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <span>Analysis</span>
-    </div>
+      <div className="home-header">
+        <button className="back-button" onClick={onBack}>
+          <svg viewBox="0 0 24 24" className="back-icon">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <span>Analysis</span>
+      </div>
 
       <div className="file-drop-area" 
         onDrop={handleFileDrop}

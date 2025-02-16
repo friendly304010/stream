@@ -10,12 +10,21 @@ import requests
 import json
 from web3 import Web3
 from eth_account import Account
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import tempfile
 
-app = Flask(__name__)
-CORS(app)
+app = FastAPI()
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Load environment variables
 load_dotenv()
@@ -154,16 +163,12 @@ def mint_analysis_nft(avg_count, norm_mot_score, recipient_address):
     return receipt
 
 
-@app.route('/analyze', methods=['POST'])
-def analyze_video():
-    if 'video' not in request.files:
-        return jsonify({'error': 'No video file provided'}), 400
-    
-    video_file = request.files['video']
-    
+@app.post("/analyze")
+async def analyze_video(video: UploadFile = File(...)):
     # Save uploaded file to temporary location
     with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video:
-        video_file.save(temp_video.name)
+        content = await video.read()
+        temp_video.write(content)
         video_path = temp_video.name
 
     try:
@@ -175,13 +180,13 @@ def analyze_video():
             norm_mot_score = (motility_score-0.8)/7.07*100
             
             # Mint NFT
-            recipient_address = "0x17FBa2Fc71ba51c5a8d6c0191Abc2784f4953067"  # This should come from frontend
+            recipient_address = "0x17FBa2Fc71ba51c5a8d6c0191Abc2784f4953067"
             receipt = mint_analysis_nft(avg_count, norm_mot_score, recipient_address)
             
             # Determine grade
             grade = "Gold" if norm_mot_score >= 70 else "Silver" if norm_mot_score >= 40 else "Bronze"
             
-            # Call Eigen agent (mocked for now since it's a hackathon)
+            # Mock Eigen agent response
             eigen_response = {
                 "status": "success",
                 "data": {
@@ -190,23 +195,30 @@ def analyze_video():
                 }
             }
             
-            return jsonify({
+            return {
                 'average_count': float(avg_count),
                 'motility_score': float(norm_mot_score),
                 'grade': grade,
                 'transaction_hash': receipt['transactionHash'].hex(),
                 'eigen_verification': eigen_response
-            })
+            }
         
-        return jsonify({'error': 'Analysis failed'}), 500
+        return JSONResponse(
+            status_code=500,
+            content={'error': 'Analysis failed'}
+        )
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return JSONResponse(
+            status_code=500,
+            content={'error': str(e)}
+        )
     
     finally:
         # Clean up temporary file
         os.unlink(video_path)
 
-if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=5001)
 

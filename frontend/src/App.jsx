@@ -58,14 +58,14 @@ function App() {
           className="nav-button stats-button"
           onClick={() => setCurrentPage(PAGES.LEADERBOARD)}
         >
-          <svg viewBox="0 0 24 24" className="nav-icon">
-            <path d="M2 2v20h20"></path>
-            <path d="M6 16l6-8 6 8"></path>
-          </svg>
-        </button>
-      </nav>
-    </div>
-  );
-}
+            <svg viewBox="0 0 24 24" className="nav-icon">
+              <path d="M2 2v20h20"></path>
+              <path d="M6 16l6-8 6 8"></path>
+            </svg>
+          </button>
+        </nav>
+      </div>
+    );
+  }
 
-export default App;
+  export default App;
