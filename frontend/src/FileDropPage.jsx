@@ -150,6 +150,7 @@ function FileDropPage({ onBack }) {
                   ></div>
                 </div>
                 <p className="progress-stage">{progress.stage}</p>
+                <p className="progress-eta">ETA: 1 min</p>
               </div>
             )}
           </div>

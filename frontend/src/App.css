@@ -626,3 +626,10 @@
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
+
+.progress-eta {
+  color: #666;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 4px;
+}
