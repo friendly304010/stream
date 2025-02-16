@@ -1,4 +1,13 @@
 import './App.css';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+
+const healthData = [
+  { time: '1d', value: 65 },
+  { time: '2d', value: 70 },
+  { time: '3d', value: 62 },
+  { time: '4d', value: 75 },
+  { time: '5d', value: 78 },
+];
 
 function App() {
   return (
@@ -29,10 +38,37 @@ function App() {
               <div className="timestamp">3 mins ago</div>
             </div>
             <div className="graph">
-              {/* You'll need to implement a proper graph component here */}
-              <svg className="line-graph" viewBox="0 0 300 100">
-                {/* Add proper graph implementation */}
-              </svg>
+              <ResponsiveContainer width="100%" height={120}>
+                <LineChart data={healthData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                  <XAxis 
+                    dataKey="time" 
+                    tick={{ fontSize: 12, fill: '#666' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis 
+                    hide={true}
+                    domain={['dataMin - 5', 'dataMax + 5']}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      background: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                    labelStyle={{ color: '#666' }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke="#7C9BFF" 
+                    strokeWidth={2}
+                    dot={{ fill: '#7C9BFF', strokeWidth: 2 }}
+                    activeDot={{ r: 6, fill: '#7C9BFF' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>

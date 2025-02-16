@@ -210,3 +210,9 @@
 .camera-button .nav-icon {
   stroke: white;
 }
+
+.graph {
+  width: 100%;
+  height: 120px;
+  margin-top: 16px;
+}
