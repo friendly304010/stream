@@ -255,13 +255,7 @@ async def analyze_video(video: UploadFile = File(...)):
                 'motility_score': float(norm_mot_score),
                 'grade': grade,
                 'transaction_hash': receipt['transactionHash'].hex(),
-                'eigen_verification': {
-                    "status": "success",
-                    "data": {
-                        "verified": True,
-                        "timestamp": "2024-03-19T12:00:00Z"
-                    }
-                }
+                'analysis_text': "Sample analysis text about the sperm quality and recommendations."  # Add your actual analysis text here
             }
         
         # If not in dummy mode, proceed with real analysis
@@ -302,7 +296,7 @@ async def analyze_video(video: UploadFile = File(...)):
             'motility_score': float(norm_mot_score),
             'grade': grade,
             'transaction_hash': receipt['transactionHash'].hex(),
-            'eigen_verification': eigen_result
+            'analysis_text': "Sample analysis text about the sperm quality and recommendations."  # Add your actual analysis text here
         }
         
     except Exception as e:

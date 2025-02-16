@@ -178,33 +178,25 @@ function FileDropPage({ onBack }) {
             </div>
           </div>
 
-          <div className="eigen-verification">
-            <h4>AI Analysis & Recommendations</h4>
-            <div className="verification-content">
-              {result.eigen_verification.content.split('\n').map((line, i) => (
-                <p key={i}>{line.trim()}</p>
-              ))}
+          {result.transaction_hash && (
+            <div className="transaction-info">
+              <span className="label">View NFT:</span>
+              <a 
+                href={`https://sepolia.etherscan.io/tx/${result.transaction_hash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Etherscan Link
+              </a>
             </div>
-            <div className="verification-status">
-              <span className={`status ${result.eigen_verification.status}`}>
-                Verified by EigenDA
-              </span>
-              <span className="timestamp">
-                {new Date(result.eigen_verification.data.timestamp).toLocaleString()}
-              </span>
-            </div>
-          </div>
+          )}
 
-          <div className="transaction-info">
-            <span className="label">Transaction Hash:</span>
-            <a 
-              href={`https://sepolia.etherscan.io/tx/${result.transaction_hash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {result.transaction_hash.slice(0, 10)}...
-            </a>
-          </div>
+          {result.analysis_text && (
+            <div className="analysis-text">
+              <h4>AI Analysis</h4>
+              <p>{result.analysis_text}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
